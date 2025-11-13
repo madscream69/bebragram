@@ -31,6 +31,6 @@ def unlike_post(like_id: int, db: Session = Depends(get_db), current_user: User 
     return {"detail": "Unliked"}
 
 @router.post("/{post_id}/comment", response_model=schemas.Comment)
-def comment_post(post_id: int, comment: schemas.CommentCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    comment.post_id = post_id
+def comment_post(post_id: int, comment_in: schemas.CommentIn, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    comment = schemas.CommentCreate(content=comment_in.content, post_id=post_id)
     return crud.create_comment(db=db, comment=comment, user_id=current_user.id)

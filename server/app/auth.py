@@ -6,7 +6,7 @@ from passlib.context import CryptContext  # For hashing.
 from sqlalchemy.orm import Session  # For DB.
 from . import schemas, models, database  # Imports.
 from os import environ  # For secret.
-
+import hashlib
 SECRET_KEY = environ.get("JWT_SECRET")  # From .env.
 ALGORITHM = "HS256"  # Signing algorithm.
 ACCESS_TOKEN_EXPIRE_MINUTES = int(environ.get("JWT_ACCESS_TOKEN_EXPIRE_MINUTES", 30))
@@ -19,8 +19,11 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")  # Tells FastAPI where lo
 def verify_password(plain_password, hashed_password):  # Check password.
     return pwd_context.verify(plain_password, hashed_password)
 
-def get_password_hash(password):  # Hash password.
-    return pwd_context.hash(password)
+def get_password_hash(password: str) -> str:
+    pw_bytes = password.encode('utf-8')
+    if len(pw_bytes) > 72:
+        pw_bytes = hashlib.sha256(pw_bytes).digest()  # Reduce to 32 bytes
+    return pwd_context.hash(pw_bytes)  # Pass bytes directly
 
 def create_access_token(data: dict, expires_delta: timedelta = None):  # Create JWT.
     to_encode = data.copy()

@@ -10,6 +10,11 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str
 
+class UserUpdate(BaseModel):
+    email: Optional[EmailStr] = None
+    username: Optional[str] = None
+    bio: Optional[str] = None
+
 class User(UserBase):
     id: int
     created_at: datetime
@@ -68,6 +73,8 @@ class Comment(CommentBase):
 
     class Config:
         from_attributes = True
+class CommentIn(BaseModel):
+    content: str
 
 class FollowBase(BaseModel):
     followed_id: int

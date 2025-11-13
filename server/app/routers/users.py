@@ -25,8 +25,8 @@ def login_for_access_token(form_data: auth.OAuth2PasswordRequestForm = Depends()
 def read_users_me(current_user: models.User = Depends(auth.get_current_user)):
     return current_user
 
-@router.put("/me", response_model=schemas.User)  # Update profile.
-def update_user_me(user_update: schemas.UserBase, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
+@router.put("/me", response_model=schemas.User)
+def update_user_me(user_update: schemas.UserUpdate, db: Session = Depends(get_db), current_user: models.User = Depends(auth.get_current_user)):
     current_user.email = user_update.email or current_user.email
     current_user.username = user_update.username or current_user.username
     current_user.bio = user_update.bio or current_user.bio
