@@ -4,8 +4,8 @@ from typing import List
 from .. import schemas, crud
 from ..database import get_db
 from ..auth import get_current_user
-from ..models import User
-
+from .. import models
+from ..models import User, Post
 router = APIRouter(prefix="/posts", tags=["posts"])
 
 @router.post("/", response_model=schemas.Post)
@@ -16,7 +16,7 @@ def create_post(post: schemas.PostCreate, db: Session = Depends(get_db), current
 def read_feed(skip: int = 0, limit: int = 10, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     # Query posts from following.
     following_ids = [f.followed_id for f in current_user.following]
-    return db.query(models.Post).filter(models.Post.owner_id.in_(following_ids)).offset(skip).limit(limit).all()
+    return db.query(models.Post).offset(skip).limit(limit).all() #db.query(models.Post).filter(models.Post.owner_id.in_(following_ids)).offset(skip).limit(limit).all()
 
 @router.post("/{post_id}/like", response_model=schemas.Like)
 def like_post(post_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
